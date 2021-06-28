@@ -5,60 +5,52 @@ import json
 from django.http import JsonResponse
 #from chatterbot import ChatBot
 #from chatterbot.ext.django_chatterbot import settings
-
-
-
-
-
+#from concierge.google_API import GoogleMapsClient, GooglePlaces
 
 
 # Create your views here.     
 
+
 def concierge(request):
-   
+    
     return render(request, 'chat/concierge.html')
 
+# class GetRestaurantData(TemplateView):
+#     template_name = 'chat/concierge.html'
+#     def search_places_by_coordinate(self, *args, **kwargs):
+#         context = {
+#             'geolocation' : (),
+#         }
+#         return context
+ 
+def bot_search(request):
+    query = request.GET.get('query')
 
-# Geocoding API
-# Places API
+
+
+from django.http import HttpResponse
+from django.forms import Form
+from django.views.decorators.csrf import csrf_exempt
+from concierge.google_api import *
+
+
+@csrf_exempt
+def restaurant_data(request):
+    if request.method == "POST":
+        location = request.POST["location"]
+        
+        
+        context = {
+          'location': location,
+          'results': search_restaurant(location)
+        }
+        return render(request, "chat/rest_location.html", context=context)
+
+    else:
+        return render(request, "chat/rest_location.html")
 
 
 
-# class ChatterBotApiView(View):
-#     """
-#     Provide an API endpoint to interact with ChatterBot.
-#     """
-    
 
-#     chatterbot = ChatBot(**settings.CHATTERBOT)
-
-    
-#     def post(self, request, *args, **kwargs):
-#         """
-#         Return a response to the statement in the posted data.
-#         * The JSON data should contain a 'text' attribute.
-#         """
-#         input_data = json.loads(request.body.decode('utf-8'))
-
-#         if 'text' not in input_data:
-#             return JsonResponse({
-#                 'text': [
-#                     'The attribute "text" is required.'
-#                 ]
-#             }, status=400)
-
-#         response = self.chatterbot.get_response(input_data)
-
-#         response_data = response.serialize()
-
-#         return JsonResponse(response_data, status=200)
-
-#     def get(self, request, *args, **kwargs):
-#         """
-#         Return data corresponding to the current conversation.
-#         """
-#         return JsonResponse({
-#             'name': self.chatterbot.name
-#         })
 
 

@@ -198,5 +198,5 @@ MESSAGE_TAGS = {
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-GOOGLE_API_KEY = 'AIzaSyAuo5bAWOvBReyGLAVc_JbC8k6eMZ6ut3I'
+GOOGLE_API_KEY = 'XXX'
 

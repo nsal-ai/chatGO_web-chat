@@ -6,7 +6,7 @@ import json
 import time
 
 
-GOOGLE_API_KEY = "AIzaSyAuo5bAWOvBReyGLAVc_JbC8k6eMZ6ut3I"
+GOOGLE_API_KEY = "XXX"
 
 # Geocoding API
 # Places API
@@ -18,7 +18,7 @@ class GoogleMapsClient(object):
     location_query = None
     api_key = None
 
-    def __init__(self, api_key=None, address_or_postal_code=None, *args, **kwargs):
+    def __init__(self, api_key=GOOGLE_API_KEY, address_or_postal_code=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if api_key == None:
             raise Exception('API key required')
@@ -49,19 +49,6 @@ class GoogleMapsClient(object):
         self.lng = lng
         return lat, lng
 
-
-
-
-client = GoogleMapsClient(api_key=GOOGLE_API_KEY, address_or_postal_code=str(input("enter your location")))
-print(client.lat, client.lng)
-
-#print(client.search('thai', radius=100))
-
-
-
-
-#print(client.detail(place_id='ChIJ1XGIYT8FdkgRl_7t9uh8rGs')['result']['name']) # place id needs to be extracted GoogleMapsClient
-#print(client.detail(place_id='ChIJG6soKcwEdkgRN5Q-HvqfMbc'))
 
 
 
@@ -102,32 +89,39 @@ class GooglePlaces(object):
         res = requests.get(endpoint_url, params = params)
         place_details =  json.loads(res.content)
         return place_details
-if __name__ == '__main__':
-    api = GooglePlaces("AIzaSyAuo5bAWOvBReyGLAVc_JbC8k6eMZ6ut3I")
+
+def search_restaurant(location):
+    client = GoogleMapsClient(api_key=GOOGLE_API_KEY, address_or_postal_code=location)
+    api = GooglePlaces(GOOGLE_API_KEY)
     places = api.search_places_by_coordinate(f"{client.lat} ,{client.lng}", "50", "restaurant")
     fields = ['name', 'formatted_address', 'international_phone_number', 'website', 'rating', 'review']
+    return places
+
+def print_results(places):
+    api = GooglePlaces(GOOGLE_API_KEY)
+    fields = ['name', 'formatted_address', 'international_phone_number', 'website', 'rating', 'review']    
     for place in places:
         details = api.get_place_details(place['place_id'], fields)
         try:
             website = details['result']['website']
         except KeyError:
             website = ""
- 
+
         try:
             name = details['result']['name']
         except KeyError:
             name = ""
- 
+
         try:
             address = details['result']['formatted_address']
         except KeyError:
             address = ""
- 
+
         try:
             phone_number = details['result']['international_phone_number']
         except KeyError:
             phone_number = ""
- 
+
         try:
             reviews = details['result']['reviews']
         except KeyError:
@@ -151,7 +145,11 @@ if __name__ == '__main__':
             print("Profile photo:", profile_photo)
             print("-----------------------------------------")
 
+      
 
+if __name__ == '__main__':
+    places = search_restaurant(str(input("enter your location")))
+    print_results(places)
 
 
 
